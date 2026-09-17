@@ -230,86 +230,9 @@ export const resetAllData = () => {
   );
 };
 
-// ── AUTO-SEED ON FIRST VISIT ──────────────────────────────────────────────────
-// Runs once when the page first loads. Seeds rich demo data so site is
-// immediately usable without the user adding anything.
-const AUTO_SEED_KEY = "lms_auto_seeded_v3";
-
-const daysAgo  = (n) => new Date(Date.now() - n * 864e5).toISOString();
-const daysAhead = (n) => new Date(Date.now() + n * 864e5).toISOString();
-
-if (typeof localStorage !== "undefined" && !localStorage.getItem(AUTO_SEED_KEY)) {
-  // Clear any stale data from previous broken versions
-  ["lms_books", "lms_members", "lms_transactions", "lms_activity",
-   "lms_demo_cleared", "lms_auto_seeded_v1", "lms_auto_seeded_v2"].forEach((k) =>
-    localStorage.removeItem(k)
-  );
-
-  const BOOKS = [
-    { title: "To Kill a Mockingbird",      author: "Harper Lee",           publisher: "J.B. Lippincott",  isbn: "9780061935466", category: "Fiction",      totalCopies: 5, availableCopies: 3 },
-    { title: "A Brief History of Time",    author: "Stephen Hawking",      publisher: "Bantam Books",     isbn: "9780553380163", category: "Science",      totalCopies: 4, availableCopies: 4 },
-    { title: "The Great Gatsby",           author: "F. Scott Fitzgerald",  publisher: "Scribner",         isbn: "9780743273565", category: "Fiction",      totalCopies: 6, availableCopies: 5 },
-    { title: "Introduction to Algorithms", author: "Thomas H. Cormen",     publisher: "MIT Press",        isbn: "9780262033848", category: "Programming",  totalCopies: 3, availableCopies: 1 },
-    { title: "Sapiens",                    author: "Yuval Noah Harari",    publisher: "Harper",           isbn: "9780062316097", category: "History",      totalCopies: 5, availableCopies: 3 },
-    { title: "Python Crash Course",        author: "Eric Matthes",         publisher: "No Starch Press",  isbn: "9781593279288", category: "Programming",  totalCopies: 4, availableCopies: 2 },
-    { title: "The Art of War",             author: "Sun Tzu",              publisher: "Pax Librorum",     isbn: "9781599869773", category: "History",      totalCopies: 7, availableCopies: 7 },
-    { title: "Calculus: Early Transcend.", author: "James Stewart",        publisher: "Cengage",          isbn: "9781285741550", category: "Mathematics",  totalCopies: 6, availableCopies: 4 },
-    { title: "1984",                       author: "George Orwell",        publisher: "Secker & Warburg", isbn: "9780451524935", category: "Fiction",      totalCopies: 8, availableCopies: 6 },
-    { title: "The Feynman Lectures",       author: "Richard P. Feynman",   publisher: "Addison-Wesley",   isbn: "9780465023820", category: "Science",      totalCopies: 3, availableCopies: 2 },
-    { title: "Atomic Habits",             author: "James Clear",           publisher: "Avery",            isbn: "9780735211292", category: "Self-Help",    totalCopies: 5, availableCopies: 4 },
-    { title: "The Alchemist",             author: "Paulo Coelho",          publisher: "HarperOne",        isbn: "9780062315007", category: "Fiction",      totalCopies: 6, availableCopies: 5 },
-  ];
-
-  const MEMBERS = [
-    { name: "Aarav Sharma",   classSection: "10-A", phone: "9876543210", email: "aarav@school.edu",   issuedBooks: 1 },
-    { name: "Priya Patel",    classSection: "9-B",  phone: "9876543211", email: "priya@school.edu",   issuedBooks: 0 },
-    { name: "Rohan Mehta",    classSection: "11-C", phone: "9876543212", email: "rohan@school.edu",   issuedBooks: 2 },
-    { name: "Sneha Gupta",    classSection: "8-A",  phone: "9876543213", email: "sneha@school.edu",   issuedBooks: 1 },
-    { name: "Arjun Singh",    classSection: "12-B", phone: "9876543214", email: "arjun@school.edu",   issuedBooks: 0 },
-    { name: "Kavya Reddy",    classSection: "10-B", phone: "9876543215", email: "kavya@school.edu",   issuedBooks: 1 },
-    { name: "Dev Joshi",      classSection: "9-A",  phone: "9876543216", email: "dev@school.edu",     issuedBooks: 0 },
-    { name: "Nisha Verma",    classSection: "11-A", phone: "9876543217", email: "nisha@school.edu",   issuedBooks: 1 },
-  ];
-
-  const now = new Date().toISOString();
-  const books   = BOOKS.map((b) => ({ ...b, id: uid(), createdAt: now }));
-  const members = MEMBERS.map((m) => ({ ...m, id: uid(), createdAt: now }));
-
-  const transactions = [
-    // Overdue — issued 20 days ago, due 6 days ago
-    { id: uid(), bookId: books[3].id, bookTitle: books[3].title, memberId: members[2].id, memberName: members[2].name, issuedAt: daysAgo(20), dueDate: daysAgo(6),  returnedAt: null, fine: 0, finePaid: false, renewals: 0, status: "issued" },
-    // Active — issued 5 days ago, due in 9 days
-    { id: uid(), bookId: books[0].id, bookTitle: books[0].title, memberId: members[0].id, memberName: members[0].name, issuedAt: daysAgo(5),  dueDate: daysAhead(9), returnedAt: null, fine: 0, finePaid: false, renewals: 0, status: "issued" },
-    // Overdue — issued 18 days ago, due 4 days ago
-    { id: uid(), bookId: books[5].id, bookTitle: books[5].title, memberId: members[2].id, memberName: members[2].name, issuedAt: daysAgo(18), dueDate: daysAgo(4),  returnedAt: null, fine: 0, finePaid: false, renewals: 0, status: "issued" },
-    // Active — issued 3 days ago, due in 11 days
-    { id: uid(), bookId: books[7].id, bookTitle: books[7].title, memberId: members[3].id, memberName: members[3].name, issuedAt: daysAgo(3),  dueDate: daysAhead(11),returnedAt: null, fine: 0, finePaid: false, renewals: 0, status: "issued" },
-    // Active — issued 1 day ago, due in 13 days
-    { id: uid(), bookId: books[10].id, bookTitle: books[10].title, memberId: members[5].id, memberName: members[5].name, issuedAt: daysAgo(1), dueDate: daysAhead(13), returnedAt: null, fine: 0, finePaid: false, renewals: 0, status: "issued" },
-    // Overdue — issued 10 days ago, due 2 days ago
-    { id: uid(), bookId: books[11].id, bookTitle: books[11].title, memberId: members[7].id, memberName: members[7].name, issuedAt: daysAgo(10), dueDate: daysAgo(2), returnedAt: null, fine: 0, finePaid: false, renewals: 0, status: "issued" },
-    // Returned — fine paid
-    { id: uid(), bookId: books[1].id, bookTitle: books[1].title, memberId: members[3].id, memberName: members[3].name, issuedAt: daysAgo(30), dueDate: daysAgo(16), returnedAt: daysAgo(10), fine: 12, finePaid: true,  renewals: 0, status: "returned" },
-    // Returned — no fine
-    { id: uid(), bookId: books[4].id, bookTitle: books[4].title, memberId: members[1].id, memberName: members[1].name, issuedAt: daysAgo(20), dueDate: daysAgo(6),  returnedAt: daysAgo(8), fine: 0,  finePaid: true,  renewals: 1, status: "returned" },
-    // Returned — fine unpaid
-    { id: uid(), bookId: books[8].id, bookTitle: books[8].title, memberId: members[4].id, memberName: members[4].name, issuedAt: daysAgo(40), dueDate: daysAgo(26), returnedAt: daysAgo(20), fine: 6, finePaid: false, renewals: 0, status: "returned" },
-  ];
-
-  const activityLog = [
-    { id: uid(), type: "ISSUE",  description: `"${books[3].title}" issued to ${members[2].name}`, meta: {}, timestamp: daysAgo(20) },
-    { id: uid(), type: "ISSUE",  description: `"${books[0].title}" issued to ${members[0].name}`, meta: {}, timestamp: daysAgo(5)  },
-    { id: uid(), type: "RETURN", description: `"${books[1].title}" returned by ${members[3].name} — Fine: ₹12`, meta: {}, timestamp: daysAgo(10) },
-    { id: uid(), type: "RETURN", description: `"${books[4].title}" returned by ${members[1].name} — No fine`, meta: {}, timestamp: daysAgo(8)  },
-    { id: uid(), type: "ISSUE",  description: `"${books[5].title}" issued to ${members[2].name}`, meta: {}, timestamp: daysAgo(18) },
-    { id: uid(), type: "ISSUE",  description: `"${books[7].title}" issued to ${members[3].name}`, meta: {}, timestamp: daysAgo(3)  },
-    { id: uid(), type: "ISSUE",  description: `"${books[10].title}" issued to ${members[5].name}`,meta: {}, timestamp: daysAgo(1)  },
-    { id: uid(), type: "ISSUE",  description: `"${books[11].title}" issued to ${members[7].name}`,meta: {}, timestamp: daysAgo(10) },
-  ];
-
-  save("lms_books",        books);
-  save("lms_members",      members);
-  save("lms_transactions", transactions);
-  save("lms_activity",     activityLog);
-  localStorage.setItem(AUTO_SEED_KEY, "true");
+// No sample data — starts completely empty on first visit.
+// Clear any stale seed keys from previous versions.
+if (typeof localStorage !== "undefined") {
+  ["lms_demo_cleared", "lms_auto_seeded_v1", "lms_auto_seeded_v2", "lms_auto_seeded_v3"]
+    .forEach((k) => localStorage.removeItem(k));
 }
