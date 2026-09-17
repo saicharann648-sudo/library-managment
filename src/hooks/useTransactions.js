@@ -1,18 +1,17 @@
-// Custom hook — real-time Firestore listener for transactions
-import { useEffect, useState } from "react";
-import { subscribeToTransactions } from "../firebase/transactions";
+// useTransactions — localStorage-based hook (no Firebase)
+import { useState, useEffect } from "react";
+import { getTransactions } from "../db/localDB";
 
 export const useTransactions = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(null);
+  const [transactions, setTransactions] = useState(() => getTransactions());
+  const [loading, setLoading]           = useState(false);
+  const [error]                         = useState(null);
 
   useEffect(() => {
-    const unsubscribe = subscribeToTransactions((data) => {
-      setTransactions(data);
-      setLoading(false);
-    });
-    return unsubscribe;
+    const refresh  = () => setTransactions(getTransactions());
+    const onStorage = (e) => { if (e.key?.startsWith("lms_")) refresh(); };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   return { transactions, loading, error };

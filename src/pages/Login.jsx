@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
 const Login = () => {
-  const [form, setForm]       = useState({ email: "admin@library.com", password: "library123" });
+  const [form, setForm]       = useState({ email: "admin@library.com", password: "admin123" });
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login }             = useAuth();
@@ -108,7 +108,7 @@ const Login = () => {
             <div>
               <p className="font-semibold text-blue-700 dark:text-blue-300">Default Credentials:</p>
               <p className="font-mono text-[11px] mt-0.5">Email: admin@library.com</p>
-              <p className="font-mono text-[11px]">Password: library123</p>
+              <p className="font-mono text-[11px]">Password: admin123</p>
             </div>
           </div>
         </div>

@@ -1,18 +1,17 @@
-// Custom hook — real-time Firestore listener for members
-import { useEffect, useState } from "react";
-import { subscribeToMembers } from "../firebase/members";
+// useMembers — localStorage-based hook (no Firebase)
+import { useState, useEffect } from "react";
+import { getMembers } from "../db/localDB";
 
 export const useMembers = () => {
-  const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+  const [members, setMembers] = useState(() => getMembers());
+  const [loading, setLoading] = useState(false);
+  const [error]               = useState(null);
 
   useEffect(() => {
-    const unsubscribe = subscribeToMembers((data) => {
-      setMembers(data);
-      setLoading(false);
-    });
-    return unsubscribe;
+    const refresh  = () => setMembers(getMembers());
+    const onStorage = (e) => { if (e.key?.startsWith("lms_")) refresh(); };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   return { members, loading, error };
