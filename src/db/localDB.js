@@ -230,9 +230,13 @@ export const resetAllData = () => {
   );
 };
 
-// No sample data — starts completely empty on first visit.
-// Clear any stale seed keys from previous versions.
-if (typeof localStorage !== "undefined") {
-  ["lms_demo_cleared", "lms_auto_seeded_v1", "lms_auto_seeded_v2", "lms_auto_seeded_v3"]
+// ── ONE-TIME WIPE OF OLD AUTO-SEEDED DATA ────────────────────────────────────
+// Clears all data that was automatically seeded by previous versions.
+// Uses lms_reset_v1 flag so it only runs once per browser.
+// Any data the user manually adds after this is safe.
+if (typeof localStorage !== "undefined" && !localStorage.getItem("lms_reset_v1")) {
+  ["lms_books", "lms_members", "lms_transactions", "lms_activity",
+   "lms_demo_cleared", "lms_auto_seeded_v1", "lms_auto_seeded_v2", "lms_auto_seeded_v3"]
     .forEach((k) => localStorage.removeItem(k));
+  localStorage.setItem("lms_reset_v1", "true");
 }
