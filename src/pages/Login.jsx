@@ -1,12 +1,12 @@
 // Login page — clean student project style login screen
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GraduationCap, Mail, Lock, Eye, EyeOff, LogIn, Info } from "lucide-react";
+import { GraduationCap, Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
 const Login = () => {
-  const [form, setForm]       = useState({ email: "admin@library.com", password: "admin123" });
+  const [form, setForm]       = useState({ email: "", password: "" });
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login }             = useAuth();
@@ -102,15 +102,7 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Pre-filled credentials box */}
-          <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 text-xs text-slate-600 dark:text-slate-300 flex items-start gap-2">
-            <Info size={14} className="text-blue-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-blue-700 dark:text-blue-300">Default Credentials:</p>
-              <p className="font-mono text-[11px] mt-0.5">Email: admin@library.com</p>
-              <p className="font-mono text-[11px]">Password: admin123</p>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
