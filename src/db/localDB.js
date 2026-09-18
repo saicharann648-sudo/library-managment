@@ -57,6 +57,33 @@ export const getSession = () => {
   catch { return null; }
 };
 
+// ── RECOVERY CODE ─────────────────────────────────────────────────────────────
+// Generates a new 16-char alphanumeric recovery code and stores it.
+// Returns the plain code (shown to user ONCE — never again).
+export const generateRecoveryCode = () => {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no ambiguous chars (0/O, 1/I)
+  let code = "";
+  for (let i = 0; i < 16; i++) {
+    if (i > 0 && i % 4 === 0) code += "-";
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  // Store as simple base64 (not true encryption, but not plaintext either)
+  localStorage.setItem("lms_recovery_hash", btoa(code));
+  localStorage.setItem("lms_recovery_set", "true");
+  return code; // return plain code once so UI can show it
+};
+
+export const hasRecoveryCode = () =>
+  !!localStorage.getItem("lms_recovery_set");
+
+export const verifyRecoveryCode = (input) => {
+  try {
+    const stored = atob(localStorage.getItem("lms_recovery_hash") || "");
+    return stored.trim().toUpperCase() === input.trim().toUpperCase();
+  } catch { return false; }
+};
+
+
 // ── BOOKS ─────────────────────────────────────────────────────────────────────
 export const getBooks = () => load("lms_books").sort((a, b) => a.title.localeCompare(b.title));
 
